@@ -1,28 +1,23 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 public class GameBoard {
     private GameTile[][] gameTiles;
     private ImageIcon player1;
     private ImageIcon player2;
-    private BufferedImage bufferedImage1;
-    private BufferedImage bufferedImage2;
     private int player;
-    private boolean gameOver;
     private int winner;
+    private int clickCounter = 0;
 
     public GameBoard(){
         setPlayer(1);
+        setWinner(0);
     }
 
     public GameBoard(int boardSize){
         initializeBoard(boardSize);
-    }
-
-    public void setGameColors(ImageIcon player1, ImageIcon player2){
-        this.player1 = player1;
-        this.player2 = player2;
     }
 
     public void initializeBoard(int boardSize){
@@ -37,37 +32,30 @@ public class GameBoard {
         }
     }
 
-    public void setGameOver(boolean gameOver){
-        this.gameOver = gameOver;
-    }
-
-    public boolean getGameOver(){
-        return gameOver;
-    }
-
-    public void setWinner(int winner){
-        this.winner = winner;
-        if(winner > 0){
-            setGameOver(true);
-        }
-    }
-
-    public int getWinner(){
-        return winner;
-    }
-
     public GameTile[][] getGameBoard(){
-        return gameTiles;
+        return Arrays.copyOf(gameTiles, gameTiles.length);
+    }
+
+    public void addClick(){
+        this.clickCounter = getClicks()+1;
+    }
+
+    public int getClicks(){
+        return clickCounter;
+    }
+
+    //player related
+    public void setGameColors(ImageIcon player1, ImageIcon player2){
+        this.player1 = player1;
+        this.player2 = player2;
     }
 
     public int getPlayer(){
         return player;
     }
-
     public void setPlayer(int player){
         this.player = player;
     }
-
     public void switchPlayer(){
         if(getPlayer() == 1){
             setPlayer(2);
@@ -76,7 +64,31 @@ public class GameBoard {
         }
     }
 
+    public int getWinner(){
+        return winner;
+    }
+    public void setWinner(int winner){
+        this.winner = winner;
+    }
+
+    //board related
+    public void printGameBoard(){
+        String output = "";
+        for(int x=0; x!= getGameBoard().length; x++){
+            output+= String.format("%-1s %-1s ", "|", x+1);
+        }
+        output += "|\n";
+        for(int i=0; i!= getGameBoard().length; i++){
+            for(int j=0; j!= getGameBoard().length; j++){
+                output += (String.format("%-1s %-1s ", "|", getGameBoard()[j][i].toString()));
+            }
+            output += "|\n";
+        }
+        System.out.println(output);
+    }
+
     public void addTile(int column){
+        addClick();
         //column = column-1;
         for(int i=getGameBoard().length-1; i!=-1; i--){
             if(getGameBoard()[column][0].getState() != 0){
@@ -91,6 +103,7 @@ public class GameBoard {
                     getGameBoard()[column][i].setIcon(player2);
                 }
                 switchPlayer();
+                //printGameBoard();
                 break;
             }
         }
@@ -108,7 +121,8 @@ public class GameBoard {
         }
     }
 
-    public void checkForWinner(){
+    public int checkForWinner(){
+        //System.out.println("checkForWinner() called");
         int player = getPlayer();
         /*
         0 - game still ongoing
@@ -117,12 +131,23 @@ public class GameBoard {
         3 - draw
         */
 
+        //draw check
+        boolean isDraw = true;
+        for(int i = 0; i < getGameBoard().length; i++){
+            if(getGameBoard()[0][i].getState() == 0){
+                isDraw = false;
+                break;
+            }
+        }
+        if(isDraw){
+            return 3;
+        }
+
         //vertical check
         for(int i = 0; i < getGameBoard().length; i++){
             for(int j = 0; j < getGameBoard().length-3; j++){
                 if(getGameBoard()[i][j].getState() == player && getGameBoard()[i][j+1].getState() == player && getGameBoard()[i][j+2].getState() == player && getGameBoard()[i][j+3].getState() == player){
-                    setWinner(player);
-                    System.out.println("Winner found");
+                    return player;
                 }
             }
         }
@@ -131,7 +156,7 @@ public class GameBoard {
         for(int i = 0; i < getGameBoard().length; i++){
             for(int j = 0; j < getGameBoard().length-3; j++){
                 if(getGameBoard()[j][i].getState() == player && getGameBoard()[j+1][i].getState() == player && getGameBoard()[j+2][i].getState() == player && getGameBoard()[j+3][i].getState() == player){
-                    setWinner(player);
+                    return player;
                 }
             }
         }
@@ -141,7 +166,7 @@ public class GameBoard {
         for(int i = getGameBoard().length-1; i>4; i--){
             for(int j = 0; j < getGameBoard().length-3; j++){
                 if(getGameBoard()[j][i].getState() == player && getGameBoard()[j+1][i-1].getState() == player && getGameBoard()[j+2][i-2].getState() == player && getGameBoard()[j+3][i-3].getState() == player){
-                   setWinner(player);
+                    return player;
                 }
             }
         }
@@ -150,9 +175,10 @@ public class GameBoard {
         for(int i = 0; i< getGameBoard().length-3; i++){
             for(int j = 0; j < getGameBoard().length-3; j++){
                 if(getGameBoard()[j][i].getState()==player && getGameBoard()[j+1][i+1].getState()==player && getGameBoard()[j+2][i+2].getState()==player && getGameBoard()[j+3][i+3].getState()==player){
-                    setWinner(player);
+                    return player;
                 }
             }
         }
+        return 0;
     }
 }

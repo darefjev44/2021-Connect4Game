@@ -1,18 +1,27 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Scanner;
 
-public class Connect4Game extends JFrame implements MouseListener {
+public class Connect4Game extends JFrame implements MouseListener, ActionListener {
 
     private boolean gameOver=false;
+    private int winner = 0;
     static GameBoard gameBoard = new GameBoard();
+    JMenu fileMenu;
 
     public Connect4Game(int boardSize, GameBoard gameBoard){
         super("Connect 4 Game");
-        GridLayout layout = new GridLayout(boardSize, boardSize, 0, 0);
+        GridLayout layout = new GridLayout(boardSize+1, boardSize, 0, 0);
         setLayout(layout);
+
+        createFileMenu();
+        JMenuBar menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+        menuBar.add(fileMenu);
+        add(menuBar);
 
         //add listeners
         for(int i = 0; i < boardSize; i++){
@@ -28,10 +37,19 @@ public class Connect4Game extends JFrame implements MouseListener {
         setVisible(true);
     }
 
+    private void createFileMenu(){
+        JMenuItem item;
+        fileMenu = new JMenu("File");
+        item = new JMenuItem("First");
+        item.addActionListener(this);
+        fileMenu.add(item);
+    }
+
+
     public static void main(String[] args){
         ImageIcon red = new ImageIcon("Connect4Game/RED.gif");
         ImageIcon blue = new ImageIcon("Connect4Game/BLUE.gif");
-        int boardSize = 15;
+        int boardSize = 7;
         gameBoard.initializeBoard(boardSize);
         gameBoard.setGameColors(red, blue);
         Connect4Game game = new Connect4Game(boardSize, gameBoard);
@@ -71,31 +89,12 @@ public class Connect4Game extends JFrame implements MouseListener {
         }while(true);*/
     }
 
-    //old method of displaying
-    public static void displayGameBoard(GameBoard gameBoard){
-        //displays game by adding it to text area row by row
-        String output = "";
-        for(int x=0; x!= gameBoard.getGameBoard().length; x++){
-            output+= String.format("%-1s %-1s ", "|", x+1);
-        }
-        output += "|\n";
-        for(int i=0; i!= gameBoard.getGameBoard().length; i++){
-            for(int j=0; j!= gameBoard.getGameBoard().length; j++){
-                output += (String.format("%-1s %-1s ", "|", gameBoard.getGameBoard()[j][i].toString()));
-            }
-            output += "|\n";
-        }
-        System.out.println(output);
-    }
-
     public void mouseClicked(MouseEvent e) {
         JLabel buttonClicked = (JLabel) e.getSource();
         int colClicked = Integer.parseInt(buttonClicked.getName());
-        System.out.println(colClicked);
         gameBoard.addTile(colClicked);
-        gameBoard.checkForWinner();
-        if(gameBoard.getGameOver()){
-            JOptionPane.showMessageDialog(null, "Game over! Winner: Player" + gameBoard.getPlayer());
+        if(gameBoard.checkForWinner() != 0){
+            JOptionPane.showMessageDialog(null, "Winner! Player " + gameBoard.getPlayer());
         }
     }
 
@@ -107,6 +106,7 @@ public class Connect4Game extends JFrame implements MouseListener {
 
     }
 
+    //highlight & dehighlight columns when moused over - todo maybe add a preview of your placement?
     public void mouseEntered(MouseEvent e) {
         JLabel buttonEntered = (JLabel) e.getSource();
         int colEntered = Integer.parseInt(buttonEntered.getName());
@@ -117,5 +117,9 @@ public class Connect4Game extends JFrame implements MouseListener {
         JLabel buttonExited = (JLabel) e.getSource();
         int colExited = Integer.parseInt(buttonExited.getName());
         gameBoard.dehighlightColumn(colExited);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+
     }
 }
