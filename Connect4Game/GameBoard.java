@@ -1,14 +1,28 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class GameBoard {
     private GameTile[][] gameTiles;
+    private ImageIcon player1;
+    private ImageIcon player2;
+    private BufferedImage bufferedImage1;
+    private BufferedImage bufferedImage2;
+    private int player;
+    private boolean gameOver;
+    private int winner;
 
     public GameBoard(){
+        setPlayer(1);
     }
 
     public GameBoard(int boardSize){
         initializeBoard(boardSize);
+    }
+
+    public void setGameColors(ImageIcon player1, ImageIcon player2){
+        this.player1 = player1;
+        this.player2 = player2;
     }
 
     public void initializeBoard(int boardSize){
@@ -18,15 +32,51 @@ public class GameBoard {
                 this.gameTiles[i][j] = new GameTile();
                 this.gameTiles[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
                 this.gameTiles[i][j].setName(String.format("%s", i));
+                getGameBoard()[i][j].setOpaque(true);
             }
         }
+    }
+
+    public void setGameOver(boolean gameOver){
+        this.gameOver = gameOver;
+    }
+
+    public boolean getGameOver(){
+        return gameOver;
+    }
+
+    public void setWinner(int winner){
+        this.winner = winner;
+        if(winner > 0){
+            setGameOver(true);
+        }
+    }
+
+    public int getWinner(){
+        return winner;
     }
 
     public GameTile[][] getGameBoard(){
         return gameTiles;
     }
 
-    public void addTile(int player, int column){
+    public int getPlayer(){
+        return player;
+    }
+
+    public void setPlayer(int player){
+        this.player = player;
+    }
+
+    public void switchPlayer(){
+        if(getPlayer() == 1){
+            setPlayer(2);
+        } else {
+            setPlayer(1);
+        }
+    }
+
+    public void addTile(int column){
         //column = column-1;
         for(int i=getGameBoard().length-1; i!=-1; i--){
             if(getGameBoard()[column][0].getState() != 0){
@@ -34,15 +84,32 @@ public class GameBoard {
                 break;
             }
             if(getGameBoard()[column][i].getState() == 0){
-                getGameBoard()[column][i].setState(player);
-                getGameBoard()[column][i].setBackground(Color.BLUE);
-                getGameBoard()[column][i].setOpaque(true);
+                getGameBoard()[column][i].setState(getPlayer());
+                if(getPlayer() == 1){
+                    getGameBoard()[column][i].setIcon(player1);
+                } else {
+                    getGameBoard()[column][i].setIcon(player2);
+                }
+                switchPlayer();
                 break;
             }
         }
     }
 
-    public int checkForWinner(int player){
+    public void highlightColumn(int column){
+        for(int i = 0; i < getGameBoard().length; i++){
+            getGameBoard()[column][i].setBackground(Color.gray);
+        }
+    }
+
+    public void dehighlightColumn(int column){
+        for(int i = 0; i < getGameBoard().length; i++){
+            getGameBoard()[column][i].setBackground(Color.white);
+        }
+    }
+
+    public void checkForWinner(){
+        int player = getPlayer();
         /*
         0 - game still ongoing
         1 - red wins
@@ -54,7 +121,8 @@ public class GameBoard {
         for(int i = 0; i < getGameBoard().length; i++){
             for(int j = 0; j < getGameBoard().length-3; j++){
                 if(getGameBoard()[i][j].getState() == player && getGameBoard()[i][j+1].getState() == player && getGameBoard()[i][j+2].getState() == player && getGameBoard()[i][j+3].getState() == player){
-                    return player;
+                    setWinner(player);
+                    System.out.println("Winner found");
                 }
             }
         }
@@ -63,7 +131,7 @@ public class GameBoard {
         for(int i = 0; i < getGameBoard().length; i++){
             for(int j = 0; j < getGameBoard().length-3; j++){
                 if(getGameBoard()[j][i].getState() == player && getGameBoard()[j+1][i].getState() == player && getGameBoard()[j+2][i].getState() == player && getGameBoard()[j+3][i].getState() == player){
-                    return player;
+                    setWinner(player);
                 }
             }
         }
@@ -73,7 +141,7 @@ public class GameBoard {
         for(int i = getGameBoard().length-1; i>4; i--){
             for(int j = 0; j < getGameBoard().length-3; j++){
                 if(getGameBoard()[j][i].getState() == player && getGameBoard()[j+1][i-1].getState() == player && getGameBoard()[j+2][i-2].getState() == player && getGameBoard()[j+3][i-3].getState() == player){
-                    return player;
+                   setWinner(player);
                 }
             }
         }
@@ -82,10 +150,9 @@ public class GameBoard {
         for(int i = 0; i< getGameBoard().length-3; i++){
             for(int j = 0; j < getGameBoard().length-3; j++){
                 if(getGameBoard()[j][i].getState()==player && getGameBoard()[j+1][i+1].getState()==player && getGameBoard()[j+2][i+2].getState()==player && getGameBoard()[j+3][i+3].getState()==player){
-                    return player;
+                    setWinner(player);
                 }
             }
         }
-        return 0;
     }
 }

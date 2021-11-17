@@ -17,20 +17,23 @@ public class Connect4Game extends JFrame implements MouseListener {
         //add listeners
         for(int i = 0; i < boardSize; i++){
             for(int j = 0; j < boardSize; j++){
-                add(gameBoard.getGameBoard()[i][j]);
-                gameBoard.getGameBoard()[i][j].addMouseListener(this);
+                add(gameBoard.getGameBoard()[j][i]);
+                gameBoard.getGameBoard()[j][i].addMouseListener(this);
             }
         }
 
-        setSize(500, 500);
+        setSize(boardSize * 72, boardSize * 72);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setVisible(true);
     }
 
     public static void main(String[] args){
-        int boardSize = 7;
+        ImageIcon red = new ImageIcon("Connect4Game/RED.gif");
+        ImageIcon blue = new ImageIcon("Connect4Game/BLUE.gif");
+        int boardSize = 15;
         gameBoard.initializeBoard(boardSize);
+        gameBoard.setGameColors(red, blue);
         Connect4Game game = new Connect4Game(boardSize, gameBoard);
         /* OLD MAIN
         int player = 1;
@@ -89,7 +92,11 @@ public class Connect4Game extends JFrame implements MouseListener {
         JLabel buttonClicked = (JLabel) e.getSource();
         int colClicked = Integer.parseInt(buttonClicked.getName());
         System.out.println(colClicked);
-        gameBoard.addTile(1, colClicked);
+        gameBoard.addTile(colClicked);
+        gameBoard.checkForWinner();
+        if(gameBoard.getGameOver()){
+            JOptionPane.showMessageDialog(null, "Game over! Winner: Player" + gameBoard.getPlayer());
+        }
     }
 
     public void mousePressed(MouseEvent e) {
@@ -101,10 +108,14 @@ public class Connect4Game extends JFrame implements MouseListener {
     }
 
     public void mouseEntered(MouseEvent e) {
-
+        JLabel buttonEntered = (JLabel) e.getSource();
+        int colEntered = Integer.parseInt(buttonEntered.getName());
+        gameBoard.highlightColumn(colEntered);
     }
 
     public void mouseExited(MouseEvent e) {
-
+        JLabel buttonExited = (JLabel) e.getSource();
+        int colExited = Integer.parseInt(buttonExited.getName());
+        gameBoard.dehighlightColumn(colExited);
     }
 }
