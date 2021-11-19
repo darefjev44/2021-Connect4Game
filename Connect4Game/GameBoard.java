@@ -102,7 +102,6 @@ public class GameBoard {
                 } else {
                     getGameBoard()[column][i].setIcon(player2);
                 }
-                switchPlayer();
                 //printGameBoard();
                 break;
             }

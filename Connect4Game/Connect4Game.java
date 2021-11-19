@@ -6,11 +6,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class Connect4Game extends JFrame implements MouseListener, ActionListener {
-
-    private boolean gameOver=false;
-    private int winner = 0;
     static GameBoard gameBoard = new GameBoard();
     JMenu fileMenu;
+    GameTimer timer;
 
     public Connect4Game(int boardSize, GameBoard gameBoard){
         super("Connect 4 Game");
@@ -22,6 +20,11 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         menuBar.add(fileMenu);
+        menuBar.add(new JSeparator(SwingConstants.VERTICAL));
+
+        timer = new GameTimer();
+        timer.startTimer();
+        menuBar.add(timer);
 
         //game tiles
         for(int i = 0; i < gameBoard.getGameBoard().length; i++){
@@ -44,7 +47,6 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         fileMenu.add(item);
     }
 
-
     public static void main(String[] args){
         ImageIcon red = new ImageIcon("Connect4Game/RED.gif");
         ImageIcon blue = new ImageIcon("Connect4Game/BLUE.gif");
@@ -52,40 +54,6 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         gameBoard.initializeBoard(boardSize);
         gameBoard.setGameColors(red, blue);
         Connect4Game game = new Connect4Game(boardSize, gameBoard);
-        /* OLD MAIN
-        int player = 1;
-
-        String playerColor = "RED";
-
-        //TEMP, TODO make it an actual UI
-        Scanner scan = new Scanner(System.in);
-        TextArea textDisplay = new TextArea();
-        Font displayFont = new Font("Monospaced", 12, Font.PLAIN);
-        textDisplay.setFont(displayFont);
-
-        //TODO allow player to select board size
-        int boardSize = 7;
-        GameBoard gameBoard = new GameBoard(boardSize);
-
-        //gameplay loop
-        displayGameBoard(gameBoard);
-        do{
-            System.out.println("Current player: " + player + "(" + playerColor + ")");
-            System.out.print("Please choose a column (1-" + boardSize +"): ");
-            gameBoard.addTile(player, scan.nextInt());
-            displayGameBoard(gameBoard);
-            if(gameBoard.checkForWinner(player) == player){
-                JOptionPane.showMessageDialog(null, "Player " + player + " (" +playerColor+ ") wins!");
-                break;
-            }
-            if(player == 1){
-                player = 2;
-                playerColor = "BLUE";
-            } else {
-                player = 1;
-                playerColor = "RED";
-            }
-        }while(true);*/
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -93,8 +61,12 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         int colClicked = Integer.parseInt(buttonClicked.getName());
         gameBoard.addTile(colClicked);
         if(gameBoard.checkForWinner() != 0){
+            timer.stopTimer();
             JOptionPane.showMessageDialog(null, "Winner! Player " + gameBoard.getPlayer());
+        } else {
+            gameBoard.switchPlayer();
         }
+
     }
 
     public void mousePressed(MouseEvent e) {
