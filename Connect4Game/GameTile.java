@@ -3,10 +3,6 @@ import javax.swing.*;
 public class GameTile extends JLabel {
     private int state;
 
-    public GameTile(int state){
-        setState(state);
-    }
-
     public GameTile(){
         setState(0);
     }

@@ -14,18 +14,18 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
 
     public Connect4Game(int boardSize, GameBoard gameBoard){
         super("Connect 4 Game");
-        GridLayout layout = new GridLayout(boardSize+1, boardSize, 0, 0);
+        GridLayout layout = new GridLayout(boardSize, boardSize);
         setLayout(layout);
 
+        //menu bar
         createFileMenu();
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         menuBar.add(fileMenu);
-        add(menuBar);
 
-        //add listeners
-        for(int i = 0; i < boardSize; i++){
-            for(int j = 0; j < boardSize; j++){
+        //game tiles
+        for(int i = 0; i < gameBoard.getGameBoard().length; i++){
+            for(int j = 0; j < gameBoard.getGameBoard().length; j++){
                 add(gameBoard.getGameBoard()[j][i]);
                 gameBoard.getGameBoard()[j][i].addMouseListener(this);
             }
@@ -33,7 +33,6 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
 
         setSize(boardSize * 72, boardSize * 72);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         setVisible(true);
     }
 
