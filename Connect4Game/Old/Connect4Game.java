@@ -1,3 +1,5 @@
+package Old;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -66,7 +68,6 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         } else {
             gameBoard.switchPlayer();
         }
-
     }
 
     public void mousePressed(MouseEvent e) {
