@@ -8,7 +8,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class Connect4Game extends JFrame implements MouseListener, ActionListener {
@@ -445,11 +447,9 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
     }
 
     public void mouseReleased(MouseEvent e) {
-
     }
 
     public void mouseEntered(MouseEvent e) {
-
     }
 
     public void mouseExited(MouseEvent e) {
@@ -549,7 +549,8 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         simpleGameBoard.setLastAIMove(gameBoard.getLastAIMove());
         simpleGameBoard.setPlayer(gameBoard.getPlayer());
         simpleGameBoard.setTimeStarted(gameBoard.getTimeStarted());
-        simpleGameBoard.setTimeElapsed(timer.getTimeElapsed());
+        simpleGameBoard.setTimeElapsed(gameBoard.getTimeElapsed());
+        System.out.println("SimpleGameboard: " + simpleGameBoard.getTimeElapsed().get(Calendar.SECOND));
 
         gameHistory.add(simpleGameBoard);
 
@@ -567,17 +568,60 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
 
         JFrame historyWindow = new JFrame();
         ArrayList<JPanel> historyPanels = new ArrayList<>();
-        historyWindow.setLayout(new GridLayout(gameHistory.size(), 1));
+        GridLayout layout = new GridLayout(0, 1);
+        JPanel historyContainer = new JPanel();
+        historyContainer.setLayout(layout);
+        JScrollPane jScrollPane = new JScrollPane(historyContainer);
+        jScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        jScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
         JPanel panel;
-        JLabel jLabel;
+        JLabel player1Label;
+        JLabel player2Label;
+        JLabel timeElapsedLabel;
+        JLabel timePlayedLabel;
+        SimpleDateFormat dateFormat;
+        GridBagLayout entryLayout = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+
         for(int i = 0; i < gameHistory.size(); i++){
+            player1Label = new JLabel(gameHistory.get(i).getPlayer1Name());
+            player2Label = new JLabel(gameHistory.get(i).getPlayer2Name());
+            timeElapsedLabel = new JLabel("Time elapsed: " + String.format("%02d:%02d", gameHistory.get(i).getTimeElapsed().get(Calendar.MINUTE), gameHistory.get(i).getTimeElapsed().get(Calendar.SECOND)));
+            dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+            timePlayedLabel = new JLabel("Date: " + dateFormat.format(gameHistory.get(i).getTimeStarted().getTime()));
             panel = new JPanel();
-            jLabel = new JLabel(gameHistory.get(i).getPlayer2Name());
-            panel.add(jLabel);
+            panel.setLayout(entryLayout);
+
+            c.gridwidth = 1;
+            c.gridx = 0;
+            c.gridy = 0;
+            c.weightx = 1;
+            c.anchor = GridBagConstraints.EAST;
+            panel.add(player1Label, c);
+            c.gridx = 1;
+            c.weightx = 0.5;
+            c.anchor = GridBagConstraints.CENTER;
+            panel.add(new JLabel(" vs "), c);
+            c.gridx = 2;
+            c.weightx = 1;
+            c.anchor = GridBagConstraints.WEST;
+            panel.add(player2Label, c);
+
+            c.anchor = GridBagConstraints.CENTER;
+            c.gridx = 0;
+            c.gridy = 1;
+            c.gridwidth = 3;
+            panel.add(timeElapsedLabel, c);
+
+            c.gridy = 2;
+            panel.add(timePlayedLabel, c);
+
             historyPanels.add(panel);
-            historyWindow.add(historyPanels.get(i));
-            historyWindow.add(new JSeparator());
+            historyContainer.add(historyPanels.get(i));
         }
+
+        historyWindow.add(jScrollPane);
         historyWindow.setVisible(true);
     }
 
@@ -594,7 +638,6 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
 
         timer.stopTimer();
         gameBoard.setTimeElapsed(timer.getTimeElapsed());
-        timer.resetTimer();
         if(gameBoard.getWinner() == 1 || gameBoard.getWinner() == 2){
             JOptionPane.showMessageDialog(null, "Winner! Player " + gameBoard.getPlayer());
         } else if (gameBoard.getWinner() == 3){
