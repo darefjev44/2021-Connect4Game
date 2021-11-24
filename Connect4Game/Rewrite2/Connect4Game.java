@@ -1,6 +1,7 @@
 package Rewrite2;
 
 import javax.swing.*;
+import javax.swing.border.StrokeBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -157,10 +158,10 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         timer.startTimer();
 
         gameBoard = new GameBoard(boardSize);
-        gameBoard.setPlayerNames(p1Name.getText(), p2Name.getText());
         gameBoard.setTimeStarted(new GregorianCalendar());
         gameBoard.setPlayerIcons(imageIcons[p1index], imageIcons[p2index]);
         gameBoard.setAIStuff(aiToggle.isSelected(), aiDifficulty.getSelectedIndex());
+        gameBoard.setPlayerNames(p1Name.getText(), p2Name.getText());
 
         for(int i = 0; i < boardSize; i++){
             for(int j = 0; j < boardSize; j++){
@@ -450,9 +451,15 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
     }
 
     public void mouseEntered(MouseEvent e) {
+        JLabel buttonEntered = (JLabel) e.getSource();
+        int colEntered = Integer.parseInt(buttonEntered.getName());
+        gameBoard.highlightColumn(colEntered);
     }
 
     public void mouseExited(MouseEvent e) {
+        JLabel buttonEntered = (JLabel) e.getSource();
+        int colEntered = Integer.parseInt(buttonEntered.getName());
+        gameBoard.dehighlightColumn(colEntered);
     }
 
     //load/save game
@@ -547,6 +554,7 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         simpleGameBoard.setPlayerIcons(p1Colour.getSelectedIndex(), p2Colour.getSelectedIndex());
         simpleGameBoard.setPlayerNames(gameBoard.getPlayer1Name(), gameBoard.getPlayer2Name());
         simpleGameBoard.setLastAIMove(gameBoard.getLastAIMove());
+        simpleGameBoard.setWinner(gameBoard.getWinner());
         simpleGameBoard.setPlayer(gameBoard.getPlayer());
         simpleGameBoard.setTimeStarted(gameBoard.getTimeStarted());
         simpleGameBoard.setTimeElapsed(gameBoard.getTimeElapsed());
@@ -566,7 +574,7 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         gameHistory = (ArrayList<SimpleGameBoard>) objectInputStream.readObject();
         inputStream.close();
 
-        JFrame historyWindow = new JFrame();
+        JFrame historyWindow = new JFrame("Game History");
         ArrayList<JPanel> historyPanels = new ArrayList<>();
         GridLayout layout = new GridLayout(0, 1);
         JPanel historyContainer = new JPanel();
@@ -587,6 +595,13 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         for(int i = 0; i < gameHistory.size(); i++){
             player1Label = new JLabel(gameHistory.get(i).getPlayer1Name());
             player2Label = new JLabel(gameHistory.get(i).getPlayer2Name());
+
+            if(gameHistory.get(i).getWinner() == 1){
+                player1Label.setText("<html><u>" + player1Label.getText() + "</html></u>");
+            } else if (gameHistory.get(i).getWinner() == 2){
+                player2Label.setText("<html><u>" + player2Label.getText() + "</html></u>");
+            }
+
             timeElapsedLabel = new JLabel("Time elapsed: " + String.format("%02d:%02d", gameHistory.get(i).getTimeElapsed().get(Calendar.MINUTE), gameHistory.get(i).getTimeElapsed().get(Calendar.SECOND)));
             dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
             timePlayedLabel = new JLabel("Date: " + dateFormat.format(gameHistory.get(i).getTimeStarted().getTime()));
@@ -621,6 +636,8 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
             historyContainer.add(historyPanels.get(i));
         }
 
+        layout.setVgap(35);
+        historyWindow.setSize(300, 500);
         historyWindow.add(jScrollPane);
         historyWindow.setVisible(true);
     }

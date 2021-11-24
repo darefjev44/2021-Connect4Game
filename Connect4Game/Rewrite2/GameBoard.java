@@ -227,12 +227,25 @@ public class GameBoard {
         for(int i = 0; i < getGameBoard().length; i++){
             getGameBoard()[column][i].setBackground(Color.gray);
         }
+        getGameBoard()[column][getLowestAvailableTile(column)].setBackground(Color.red);
     }
 
     public void dehighlightColumn(int column){
         for(int i = 0; i < getGameBoard().length; i++){
             getGameBoard()[column][i].setBackground(Color.white);
         }
+    }
+
+    public int getLowestAvailableTile(int column){
+        for(int i=getGameBoard().length-1; i!=-1; i--){
+            if(getGameBoard()[column][0].getState() != 0){
+                return -1;
+            }
+            if(getGameBoard()[column][i].getState() == 0){
+                return i;
+            }
+        }
+        return -1;
     }
 
     public int checkForWinner(){
