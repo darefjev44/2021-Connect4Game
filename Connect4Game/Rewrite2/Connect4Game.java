@@ -1,8 +1,8 @@
 package Rewrite2;
 
 import javax.swing.*;
-import javax.swing.border.StrokeBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,8 +21,9 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
     JFrame settingsMenu;
     GridLayout mainLayout;
     ArrayList<SimpleGameBoard> gameHistory = new ArrayList<>();
-    File gameHistoryFile = new File("game_history.dat");
-    File file = new File("saved_state.dat");
+    File gameHistoryFile = new File("game_history.c4g");
+    File selectedFile;
+    FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("Connect 4 Save Files", "c4g");
 
     //imageIcons
     ImageIcon red = new ImageIcon("Connect4Game/RED.gif");
@@ -53,6 +54,7 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
     JPanel gamePanel;
     JLabel currentPlayerName;
     JButton mainStartButton;
+    JFileChooser fileChooser;
 
     //main UI
     public Connect4Game(){
@@ -464,80 +466,123 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
 
     //load/save game
     public void loadGame() throws IOException, ClassNotFoundException {
-        if(timer!=null){
-            getJMenuBar().remove(timer);
-            timer = null;
-            timer = new GameTimer();
-            getJMenuBar().add(timer);
+        selectedFile = null; //clearing the selected file before opening file chooser again
+        fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(fileFilter);
+        int status = fileChooser.showOpenDialog(null);
+        if(status == JFileChooser.APPROVE_OPTION){
+            selectedFile = fileChooser.getSelectedFile();
         }
 
-        SimpleGameBoard simpleGameBoard = new SimpleGameBoard();
+        try{
+            if(selectedFile != null){
+                SimpleGameBoard simpleGameBoard = new SimpleGameBoard();
 
-        FileInputStream inputStream = new FileInputStream(file);
-        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-        simpleGameBoard = (SimpleGameBoard) objectInputStream.readObject();
+                FileInputStream inputStream = new FileInputStream(selectedFile);
+                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+                simpleGameBoard = (SimpleGameBoard) objectInputStream.readObject();
 
-        remove(gamePanel);
+                if(timer!=null){
+                    getJMenuBar().remove(timer);
+                    timer = null;
+                    timer = new GameTimer();
+                    getJMenuBar().add(timer);
+                }
 
-        int boardSize = simpleGameBoard.getBoardSize();
+                remove(gamePanel);
 
-        gamePanel = new JPanel();
-        gamePanel.setLayout(new GridLayout(boardSize, boardSize));
+                int boardSize = simpleGameBoard.getBoardSize();
 
-        timer.setVisible(true);
-        timer.setTimeElapsed(simpleGameBoard.getTimeElapsed());
-        timer.startTimer();
+                gamePanel = new JPanel();
+                gamePanel.setLayout(new GridLayout(boardSize, boardSize));
 
-        gameBoard = new GameBoard(boardSize);
-        gameBoard.setPlayerIcons(imageIcons[simpleGameBoard.getPlayer1Icon()], imageIcons[simpleGameBoard.getPlayer2Icon()]);
-        gameBoard.setAIStuff(aiToggle.isSelected(), aiDifficulty.getSelectedIndex());
-        gameBoard.setPlayerNames(simpleGameBoard.getPlayer1Name(), simpleGameBoard.getPlayer2Name());
-        gameBoard.setLastAIMove(simpleGameBoard.getLastAIMove());
-        gameBoard.setAIStuff(simpleGameBoard.getAIToggle(), simpleGameBoard.getAiDifficulty());
-        gameBoard.setPlayer(simpleGameBoard.getPlayer());
-        gameBoard.setTimeStarted(simpleGameBoard.getTimeStarted());
-        gameBoard.setPlayerIcons(imageIcons[simpleGameBoard.getPlayer1Icon()], imageIcons[simpleGameBoard.getPlayer2Icon()]);
+                timer.setVisible(true);
+                timer.setTimeElapsed(simpleGameBoard.getTimeElapsed());
+                timer.startTimer();
 
-        for(int i = 0; i < boardSize; i++){
-            for(int j = 0; j < boardSize; j++){
-                gamePanel.add(gameBoard.getGameBoard()[j][i]);
-                gameBoard.getGameBoard()[i][j].setState(simpleGameBoard.getGameState()[i][j]);
-                gameBoard.getGameBoard()[j][i].addMouseListener(this);
+                gameBoard = new GameBoard(boardSize);
+                gameBoard.setPlayerIcons(imageIcons[simpleGameBoard.getPlayer1Icon()], imageIcons[simpleGameBoard.getPlayer2Icon()]);
+                gameBoard.setAIStuff(aiToggle.isSelected(), aiDifficulty.getSelectedIndex());
+                gameBoard.setPlayerNames(simpleGameBoard.getPlayer1Name(), simpleGameBoard.getPlayer2Name());
+                gameBoard.setLastAIMove(simpleGameBoard.getLastAIMove());
+                gameBoard.setAIStuff(simpleGameBoard.getAIToggle(), simpleGameBoard.getAiDifficulty());
+                gameBoard.setPlayer(simpleGameBoard.getPlayer());
+                gameBoard.setTimeStarted(simpleGameBoard.getTimeStarted());
+                gameBoard.setPlayerIcons(imageIcons[simpleGameBoard.getPlayer1Icon()], imageIcons[simpleGameBoard.getPlayer2Icon()]);
+
+                for(int i = 0; i < boardSize; i++){
+                    for(int j = 0; j < boardSize; j++){
+                        gamePanel.add(gameBoard.getGameBoard()[j][i]);
+                        gameBoard.getGameBoard()[i][j].setState(simpleGameBoard.getGameState()[i][j]);
+                        gameBoard.getGameBoard()[j][i].addMouseListener(this);
+                    }
+                }
+
+                gameBoard.loadIcons();
+                settingsMenu.setVisible(false);
+
+
+                updatePlayerLabel();
+                currentPlayerName.setVisible(true);
+
+                add(gamePanel);
+                this.setSize(72*boardSize, 72 * boardSize + getJMenuBar().getHeight());
+            } else {
+                JOptionPane.showMessageDialog(null, "No file was selected.", "Error", JOptionPane.ERROR_MESSAGE);
             }
+        } catch (FileNotFoundException fileNotFoundException){
+            JOptionPane.showMessageDialog(null, "File could not be found.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ioException){
+            JOptionPane.showMessageDialog(null, "File could not be read.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        gameBoard.loadIcons();
-        settingsMenu.setVisible(false);
-
-
-        updatePlayerLabel();
-        currentPlayerName.setVisible(true);
-
-        add(gamePanel);
-        this.setSize(72*boardSize, 72 * boardSize + getJMenuBar().getHeight());
     }
 
     public void saveGame() throws IOException {
         int boardSize = gameBoard.getGameBoard().length;
 
-        int[][] boardStateAsInt = new int[boardSize][boardSize];
-        for(int i = 0; i<boardSize; i++){
-            for(int j = 0; j<boardSize; j++){
-                boardStateAsInt[i][j] = gameBoard.getGameBoard()[i][j].getState();
+        fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(fileFilter);
+        fileChooser.setApproveButtonText("Save");
+        int status = fileChooser.showOpenDialog(null);
+        if(status == JFileChooser.APPROVE_OPTION){
+            selectedFile = fileChooser.getSelectedFile();
+
+            //ensuring file is .c4g extension
+            String selectedFileName = selectedFile.getAbsolutePath();
+            String fileExtension = selectedFileName.substring(selectedFileName.length()-4, selectedFileName.length());
+            if(!fileExtension.equals(".c4g")){
+                selectedFile = new File(selectedFileName + ".c4g");
             }
         }
-        SimpleGameBoard simpleGameBoard = new SimpleGameBoard(gameBoard.getGameBoard().length, boardStateAsInt);
-        simpleGameBoard.setAIStuff(gameBoard.getAIToggle(), gameBoard.getAiDifficulty());
-        simpleGameBoard.setPlayerIcons(p1Colour.getSelectedIndex(), p2Colour.getSelectedIndex());
-        simpleGameBoard.setPlayerNames(gameBoard.getPlayer1Name(), gameBoard.getPlayer2Name());
-        simpleGameBoard.setLastAIMove(gameBoard.getLastAIMove());
-        simpleGameBoard.setPlayer(gameBoard.getPlayer());
-        simpleGameBoard.setTimeStarted(gameBoard.getTimeStarted());
-        simpleGameBoard.setTimeElapsed(timer.getTimeElapsed());
 
-        FileOutputStream outputStream = new FileOutputStream(file);
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        objectOutputStream.writeObject(simpleGameBoard);
+        try {
+            if (selectedFile != null) {
+                int[][] boardStateAsInt = new int[boardSize][boardSize];
+                for(int i = 0; i<boardSize; i++){
+                    for(int j = 0; j<boardSize; j++){
+                        boardStateAsInt[i][j] = gameBoard.getGameBoard()[i][j].getState();
+                    }
+                }
+                SimpleGameBoard simpleGameBoard = new SimpleGameBoard(gameBoard.getGameBoard().length, boardStateAsInt);
+                simpleGameBoard.setAIStuff(gameBoard.getAIToggle(), gameBoard.getAiDifficulty());
+                simpleGameBoard.setPlayerIcons(p1Colour.getSelectedIndex(), p2Colour.getSelectedIndex());
+                simpleGameBoard.setPlayerNames(gameBoard.getPlayer1Name(), gameBoard.getPlayer2Name());
+                simpleGameBoard.setLastAIMove(gameBoard.getLastAIMove());
+                simpleGameBoard.setPlayer(gameBoard.getPlayer());
+                simpleGameBoard.setTimeStarted(gameBoard.getTimeStarted());
+                simpleGameBoard.setTimeElapsed(timer.getTimeElapsed());
+
+                FileOutputStream outputStream = new FileOutputStream(selectedFile);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+                objectOutputStream.writeObject(simpleGameBoard);
+            } else {
+                JOptionPane.showMessageDialog(null, "No file was selected.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (FileNotFoundException fileNotFoundException){
+            JOptionPane.showMessageDialog(null, "File could not be found.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ioException){
+            JOptionPane.showMessageDialog(null, "File could not be written.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void saveToHistory() throws IOException {

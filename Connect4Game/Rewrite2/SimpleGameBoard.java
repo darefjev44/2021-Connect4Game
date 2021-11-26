@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 
 /**
  * A simplified version of a GameBoard object which is used for save/load states, since IOStream seems to have an issue with the regular GameBoard.
- * Instead of the game's state being stored as a 2D GameTile array, it will be stored as a String and be converted when needed.
+ * Instead of the game's state being stored as a 2D GameTile array, it will be stored as a 2D Integer array and be converted when needed.
  */
 public class SimpleGameBoard implements Serializable {
     private int boardSize;
@@ -122,7 +122,4 @@ public class SimpleGameBoard implements Serializable {
         return timeElapsed;
     }
 
-    public void setAIToggle(boolean aiToggle) {
-        this.aiToggle = aiToggle;
-    }
 }
