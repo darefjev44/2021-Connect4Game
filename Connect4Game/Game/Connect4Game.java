@@ -684,11 +684,17 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         timer.stopTimer();
         gameBoard.setTimeElapsed(timer.getTimeElapsed());
         if(gameBoard.getWinner() == 1 || gameBoard.getWinner() == 2){
-            JOptionPane.showMessageDialog(null, "Winner! Player " + gameBoard.getPlayer());
+            String winnerName = "";
+            if(gameBoard.getWinner() == 1){
+                winnerName = gameBoard.getPlayer1Name();
+            } else if (gameBoard.getWinner() == 2){
+                winnerName = gameBoard.getPlayer2Name();
+            }
+            JOptionPane.showMessageDialog(null, winnerName + " wins!", "Victory", JOptionPane.INFORMATION_MESSAGE );
         } else if (gameBoard.getWinner() == 3){
-            JOptionPane.showMessageDialog(null, "Draw, you both suck!");
+            JOptionPane.showMessageDialog(null, "Draw, you both suck!", "Draw", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "Descriptive error message");
+            JOptionPane.showMessageDialog(null, "Descriptive error message", "Error", JOptionPane.ERROR_MESSAGE);
         }
         try{
             saveToHistory();
@@ -723,10 +729,14 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
                 }
                 break;
             case "Save Game":
-                try {
-                    saveGame();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                if(gameBoard!=null){
+                    try {
+                        saveGame();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "You can't save a game when you don't have a game open!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 break;
             case "View History":
