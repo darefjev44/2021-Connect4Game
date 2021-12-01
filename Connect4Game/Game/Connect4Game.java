@@ -1,4 +1,4 @@
-package Rewrite2;
+package Game;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -14,9 +14,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+/**
+ * The driver class for my Connect Four game.
+ * TODO write more here
+ * @author Daniel Arefjev
+ */
 public class Connect4Game extends JFrame implements MouseListener, ActionListener {
     GameBoard gameBoard;
-    JMenu fileMenu;
+    JMenu gameMenu;
     GameTimer timer;
     JFrame settingsMenu;
     GridLayout mainLayout;
@@ -26,13 +31,13 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
     FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("Connect 4 Save Files", "c4g");
 
     //imageIcons
-    ImageIcon red = new ImageIcon("Connect4Game/RED.gif");
-    ImageIcon blue = new ImageIcon("Connect4Game/BLUE.gif");
-    ImageIcon cyan = new ImageIcon("Connect4Game/CYAN.gif");
-    ImageIcon green = new ImageIcon("Connect4Game/GREEN.gif");
-    ImageIcon magenta = new ImageIcon("Connect4Game/MAGENTA.gif");
-    ImageIcon yellow = new ImageIcon("Connect4Game/YELLOW.gif");
-    ImageIcon orange = new ImageIcon("Connect4Game/ORANGE.gif");
+    ImageIcon red = new ImageIcon("Connect4Game/Images/RED.gif");
+    ImageIcon blue = new ImageIcon("Connect4Game/Images/BLUE.gif");
+    ImageIcon cyan = new ImageIcon("Connect4Game/Images/CYAN.gif");
+    ImageIcon green = new ImageIcon("Connect4Game/Images/GREEN.gif");
+    ImageIcon magenta = new ImageIcon("Connect4Game/Images/MAGENTA.gif");
+    ImageIcon yellow = new ImageIcon("Connect4Game/Images/YELLOW.gif");
+    ImageIcon orange = new ImageIcon("Connect4Game/Images/ORANGE.gif");
     ImageIcon[] imageIcons = {red, blue, cyan, green, magenta, yellow, orange};
 
     //settings fields and stuff
@@ -57,16 +62,20 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
     JFileChooser fileChooser;
 
     //main UI
+
+    /**
+     * Method to create the main game window and the menu bar.
+     */
     public Connect4Game(){
         super("Connect 4 Game");
         mainLayout = new GridLayout();
         setLayout(mainLayout);
 
-        createFileMenu();
+        createGameMenu();
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         menuBar.setLayout(new BorderLayout());
-        menuBar.add(fileMenu, BorderLayout.WEST);
+        menuBar.add(gameMenu, BorderLayout.WEST);
 
         currentPlayerName = new JLabel();
         menuBar.add(currentPlayerName, BorderLayout.EAST);
@@ -84,30 +93,36 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         setVisible(true);
     }
 
-    public void createFileMenu(){
+    /**
+     * Method to create the top left menu and add its items.
+     */
+    public void createGameMenu(){
         JMenuItem item;
-        fileMenu = new JMenu("Menu");
+        gameMenu = new JMenu("Menu");
 
         item = new JMenuItem("New Game");
         item.addActionListener(this);
-        fileMenu.add(item);
+        gameMenu.add(item);
 
         item = new JMenuItem("Save Game");
         item.addActionListener(this);
-        fileMenu.add(item);
+        gameMenu.add(item);
 
         item = new JMenuItem("Load Game");
         item.addActionListener(this);
-        fileMenu.add(item);
+        gameMenu.add(item);
 
         JSeparator separator = new JSeparator();
-        fileMenu.add(separator);
+        gameMenu.add(separator);
 
         item = new JMenuItem("View History");
         item.addActionListener(this);
-        fileMenu.add(item);
+        gameMenu.add(item);
     }
 
+    /**
+     * Method to reset and create the "start" area for the main game window.
+     */
     public void createStartArea(){
         //getting rid of any now unnecessary objects
         if(gamePanel != null){
@@ -130,6 +145,10 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
 
         add(gamePanel);
     }
+
+    /**
+     * Method to reset the main window area and populate it with the actual game elements.
+     */
     public void createGameArea(){
         remove(gamePanel);
 
@@ -186,6 +205,10 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         this.setSize(72*boardSize, 72 * boardSize + getJMenuBar().getHeight());
     }
 
+    /**
+     * Method to create the settings menu which can be accessed from the Game menu within the menu bar.
+     * Here you can select various options to start a new game with.
+     */
     public void createSettingsMenu(){
         settingsMenu = new JFrame("Game Settings");
 
@@ -222,6 +245,10 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         settingsStartButton.addActionListener(new ButtonEventHandler());
         settingsMenu.add(settingsStartButton, c);
     }
+
+    /**
+     * Method which creates a panel with board related settings to be included in the settings menu.
+     */
     public void createBoardSettings(){
         /* found out about JSpinner and looked it up on the java docs, which also lead me to SpinnerModel/SpinnerNumberModel */
         panel = new JPanel();
@@ -274,6 +301,9 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
             }
         });
     }
+    /**
+     * Method which creates a panel with AI related settings to be included in the settings menu.
+     */
     public void createAISettings(){
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
@@ -308,6 +338,9 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         panel.add(aiDifficulty, c);
         aiDifficulty.addActionListener(this);
     }
+    /**
+     * Method which creates a panel with player related settings to be included in the settings menu.
+     */
     public void createPlayerSettings(){
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
@@ -381,90 +414,19 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         p2Name.setPreferredSize(p1Colour.getPreferredSize());
     }
 
+    /**
+     * Main method which just creates an instance of the Connect4Game JFrame.
+     */
     public static void main(String[] args){
         Connect4Game game = new Connect4Game();
     }
 
-    //listeners
-    public void actionPerformed(ActionEvent e) {
-        String menuName;
-        menuName = e.getActionCommand();
-
-        switch (menuName) {
-            case "New Game":
-                createSettingsMenu();
-                settingsMenu.setVisible(true);
-                break;
-            case "Load Game":
-                try {
-                    loadGame();
-                } catch (IOException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                }
-                break;
-            case "Save Game":
-                try {
-                    saveGame();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                break;
-            case "View History":
-                try {
-                    loadHistory();
-                } catch (EOFException ex){
-                    //nothing to do here - works as intended?
-                } catch (IOException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                }
-        }
-    }
-
-    public void mouseClicked(MouseEvent e) {
-        JLabel buttonClicked = (JLabel) e.getSource();
-        int colClicked = Integer.parseInt(buttonClicked.getName());
-        gameBoard.addTile(colClicked);
-        if(gameBoard.checkForWinner() != 0){
-            gameEnded();
-        }
-        if(gameBoard!=null){
-            if(!gameBoard.getAIToggle()){
-                gameBoard.switchPlayer();
-                updatePlayerLabel();
-            } else {
-                gameBoard.doAIMove();
-                if(gameBoard.checkForWinner() != 0){
-                    gameEnded();
-                } else {
-                    gameBoard.switchPlayer();
-                    updatePlayerLabel();
-                }
-            }
-
-
-        }
-    }
-
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-        JLabel buttonEntered = (JLabel) e.getSource();
-        int colEntered = Integer.parseInt(buttonEntered.getName());
-        gameBoard.highlightColumn(colEntered);
-    }
-
-    public void mouseExited(MouseEvent e) {
-        JLabel buttonEntered = (JLabel) e.getSource();
-        int colEntered = Integer.parseInt(buttonEntered.getName());
-        gameBoard.dehighlightColumn(colEntered);
-    }
-
     //load/save game
+
+    /**
+     * Method to load a save file which contains a SimpleGameBoard object, and convert it into a GameBoard object using
+     * a JFileChooser.
+     */
     public void loadGame() throws IOException, ClassNotFoundException {
         selectedFile = null; //clearing the selected file before opening file chooser again
         fileChooser = new JFileChooser();
@@ -537,6 +499,10 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         }
     }
 
+    /**
+     * Method to convert the currently used GameBoard object into a SimpleGameBoard object and to save it to a file
+     * using a JFileChooser. There is also some code to ensure that it's saved as a .c4g file.
+     */
     public void saveGame() throws IOException {
         int boardSize = gameBoard.getGameBoard().length;
 
@@ -585,6 +551,10 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         }
     }
 
+    /**
+     * Method which is called when a game ends, which converts the current GameBoard to a SimpleGameBoard and stores
+     * it in an ArrayList<SimpleGameBoard> within the game_history.c4g file for viewing in the history window.
+     */
     public void saveToHistory() throws IOException {
         int boardSize = gameBoard.getGameBoard().length;
 
@@ -613,6 +583,10 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         outputStream.close();
     }
 
+    /**
+     * Method which is called when the history menu is opened, which loads the contents of the game_history.c4g
+     * file to be displayed in the history menu.
+     */
     public void loadHistory() throws IOException, ClassNotFoundException {
         FileInputStream inputStream = new FileInputStream(gameHistoryFile);
         ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
@@ -687,6 +661,10 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         historyWindow.setVisible(true);
     }
 
+    /**
+     * Method which is called when a player makes a move, to update the currentPlayerName label within the JMenuBar
+     * with the appropriate player's name.
+     */
     public void updatePlayerLabel(){
         if(gameBoard.getPlayer() == 1){
             currentPlayerName.setText(gameBoard.getPlayer1Name());
@@ -695,17 +673,28 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         }
     }
     //game stuff
+
+    /**
+     * Method which is called when a game ends, which stops the game timer, displays a win/draw message and cleans up
+     * the UI.
+     */
     public void gameEnded() {
         currentPlayerName.setVisible(false);
 
         timer.stopTimer();
         gameBoard.setTimeElapsed(timer.getTimeElapsed());
         if(gameBoard.getWinner() == 1 || gameBoard.getWinner() == 2){
-            JOptionPane.showMessageDialog(null, "Winner! Player " + gameBoard.getPlayer());
+            String winnerName = "";
+            if(gameBoard.getWinner() == 1){
+                winnerName = gameBoard.getPlayer1Name();
+            } else if (gameBoard.getWinner() == 2){
+                winnerName = gameBoard.getPlayer2Name();
+            }
+            JOptionPane.showMessageDialog(null, winnerName + " wins!", "Victory", JOptionPane.INFORMATION_MESSAGE );
         } else if (gameBoard.getWinner() == 3){
-            JOptionPane.showMessageDialog(null, "Draw, you both suck!");
+            JOptionPane.showMessageDialog(null, "Draw, you both suck!", "Draw", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "Descriptive error message");
+            JOptionPane.showMessageDialog(null, "Descriptive error message", "Error", JOptionPane.ERROR_MESSAGE);
         }
         try{
             saveToHistory();
@@ -717,18 +706,120 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         //need to poke main window again to redraw it I guess
         setSize(500, 500 + getJMenuBar().getHeight());
     }
+
+    //listeners
+
+    /**
+     * Listener method which handles the game menu.
+     */
+    public void actionPerformed(ActionEvent e) {
+        String menuName;
+        menuName = e.getActionCommand();
+
+        switch (menuName) {
+            case "New Game":
+                createSettingsMenu();
+                settingsMenu.setVisible(true);
+                break;
+            case "Load Game":
+                try {
+                    loadGame();
+                } catch (IOException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Save Game":
+                if(gameBoard!=null){
+                    try {
+                        saveGame();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "You can't save a game when you don't have a game open!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                break;
+            case "View History":
+                try {
+                    loadHistory();
+                } catch (EOFException ex){
+                    //nothing to do here - works as intended?
+                } catch (IOException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+        }
+    }
+
+    /**
+     * Listener method which handles when a player clicks on any of the game tiles.
+     * It gets the name of the tile which was clicked which contains the index of the column the tile is in and
+     * passes that into GameBoard.addTile. After a tile is added, it checks if there is a winner, if so, it calls gameEnded().
+     * Otherwise, it checks if the player has opted to play vs the AI, and if so it calls the GameBoard.doAIMove() method.
+     * @param e the event which activated the mouseClicked() listener.
+     */
+    public void mouseClicked(MouseEvent e) {
+        JLabel buttonClicked = (JLabel) e.getSource();
+        int colClicked = Integer.parseInt(buttonClicked.getName());
+        if(gameBoard.getLowestAvailableTile(colClicked) >= 0){
+            gameBoard.addTile(colClicked);
+            if(gameBoard.checkForWinner() != 0){
+                gameEnded();
+            }
+            if(gameBoard!=null){
+                if(!gameBoard.getAIToggle()){
+                    gameBoard.switchPlayer();
+                    updatePlayerLabel();
+                } else {
+                    gameBoard.doAIMove();
+                    if(gameBoard.checkForWinner() != 0){
+                        gameEnded();
+                    } else {
+                        gameBoard.switchPlayer();
+                        updatePlayerLabel();
+                    }
+                }
+            }
+        }
+    }
+
+    public void mousePressed(MouseEvent e) {}
+
+    public void mouseReleased(MouseEvent e) {}
+
+    /**
+     *  Listener method which handles when a player hovers over any of the game tiles.
+     *  It gets the name of the tile which was hovered which contains the index of the column the tile is in and
+     *  passes that into the GameBoard.highlightColumn() method, which changes the background of all the tiles within
+     *  the column to "highlight" it.
+     */
+    public void mouseEntered(MouseEvent e) {
+        JLabel buttonEntered = (JLabel) e.getSource();
+        int colEntered = Integer.parseInt(buttonEntered.getName());
+        gameBoard.highlightColumn(colEntered);
+    }
+
+    /**
+     *  Listener method which handles when a player hovers out any of the game tiles.
+     *  It gets the name of the tile which was hovered out of, which contains the index of the column the tile is in and
+     *  passes that into the GameBoard.dehighlightColumn() method, which changes the background of all the tiles within
+     *  the column back to their regular colour, white.
+     */
+    public void mouseExited(MouseEvent e) {
+        JLabel buttonEntered = (JLabel) e.getSource();
+        int colEntered = Integer.parseInt(buttonEntered.getName());
+        gameBoard.dehighlightColumn(colEntered);
+    }
+
     //menu button handlers
+
+    /**
+     * Listener method which handles the Start Game button within the settings menu and the start game panel (which is
+     * displayed when there's no active game) - the former calling the createGameArea() method, with the latter calling
+     * the createSettingsMenu() method.
+     */
     private class ButtonEventHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if(e.getSource() == settingsStartButton){
-                    System.out.println("GAME SETTINGS: " +
-                            "\nPlay VS AI?: " + aiToggle.isSelected() +
-                            "\nAI Difficulty: " + aiDifficulty.getSelectedItem() +
-                            "\nPlayer 1 Name: " + p1Name.getText() +
-                            "\nPlayer 2 Name: " + p2Name.getText() +
-                            "\nPlayer 1 Colour: " + p1Colour.getSelectedItem() +
-                            "\nPlayer 2 Colour: " + p1Colour.getSelectedItem() +
-                            "\nBoard Size: " + bSize.getValue());
                     createGameArea();
             } else if (e.getSource() == mainStartButton){
             createSettingsMenu();
