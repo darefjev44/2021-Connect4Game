@@ -1,12 +1,15 @@
-package Rewrite2;
+package Game;
 
-import javax.swing.*;
 import java.io.Serializable;
 import java.util.GregorianCalendar;
 
 /**
- * A simplified version of a GameBoard object which is used for save/load states, since IOStream seems to have an issue with the regular GameBoard.
- * Instead of the game's state being stored as a 2D GameTile array, it will be stored as a 2D Integer array and be converted when needed.
+ * An instantiable, simplified version of a GameBoard object which is used for save/load states,
+ * since IOStream seems to have an issue with the regular GameBoard.
+ * Instead of the game's state being stored as a 2D GameTile array,
+ * it will be stored as a 2D Integer array and be converted when needed.
+ *
+ * @author Daniel Arefjev
  */
 public class SimpleGameBoard implements Serializable {
     private int boardSize;
