@@ -16,7 +16,6 @@ import java.util.GregorianCalendar;
 
 /**
  * The driver class for my Connect Four game.
- * TODO write more here
  * @author Daniel Arefjev
  */
 public class Connect4Game extends JFrame implements MouseListener, ActionListener {
@@ -464,7 +463,7 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
 
                 gameBoard = new GameBoard(boardSize);
                 gameBoard.setPlayerIcons(imageIcons[simpleGameBoard.getPlayer1Icon()], imageIcons[simpleGameBoard.getPlayer2Icon()]);
-                gameBoard.setAIStuff(aiToggle.isSelected(), aiDifficulty.getSelectedIndex());
+                gameBoard.setAIStuff(simpleGameBoard.getAIToggle(), simpleGameBoard.getAiDifficulty());
                 gameBoard.setPlayerNames(simpleGameBoard.getPlayer1Name(), simpleGameBoard.getPlayer2Name());
                 gameBoard.setLastAIMove(simpleGameBoard.getLastAIMove());
                 gameBoard.setAIStuff(simpleGameBoard.getAIToggle(), simpleGameBoard.getAiDifficulty());
@@ -481,8 +480,8 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
                 }
 
                 gameBoard.loadIcons();
-                settingsMenu.setVisible(false);
 
+                // settingsMenu.setVisible(false); unnecessary, not sure why this is here.
 
                 updatePlayerLabel();
                 currentPlayerName.setVisible(true);
