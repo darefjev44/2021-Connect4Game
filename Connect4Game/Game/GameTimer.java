@@ -10,6 +10,9 @@ import java.util.GregorianCalendar;
  * stopwatch to track how long a game has been running for. It extends JLabel so that it may be added to the UI
  * simpler, and while the timer is running the (JLabel) text is updated every time the timer "ticks".
  *
+ * Learned how to use multithreading/Runnable at https://www.tutorialspoint.com/java/java_multithreading.htm aswell as
+ * the java docs.
+ *
  * @author Daniel Arefjev
  */
 public class GameTimer extends JLabel implements Runnable {
