@@ -748,7 +748,7 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
                 } catch (EOFException ex){
                     //nothing to do here - works as intended?
                 } catch (IOException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Game history file not found. Have you finished any games yet?", "Error", JOptionPane.ERROR_MESSAGE);
                 }
         }
     }
