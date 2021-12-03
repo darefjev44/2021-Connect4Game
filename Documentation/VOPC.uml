@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>Game</OriginalElement>
+  <nodes>
+    <node x="521.5" y="449.0">Game.GameTimer</node>
+    <node x="10.5" y="516.0">Game.Connect4Game.ButtonEventHandler</node>
+    <node x="756.5" y="152.0">Game.GameBoard</node>
+    <node x="266.5" y="207.0">Game.SimpleGameBoard</node>
+    <node x="817.8333333333334" y="0.0">Game.GameTile</node>
+    <node x="142.28703703703707" y="1029.0">Game.Connect4Game</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="Game.Connect4Game" target="Game.GameBoard" relationship="CREATE">
+      <point x="29.5" y="-247.5" />
+      <point x="289.78703703703707" y="1008.0" />
+      <point x="379.44444444444457" y="1008.0" />
+      <point x="379.44444444444457" y="988.0" />
+      <point x="825.5" y="988.0" />
+      <point x="-69.0" y="402.5" />
+    </edge>
+    <edge source="Game.Connect4Game" target="Game.Connect4Game.ButtonEventHandler" relationship="CREATE">
+      <point x="29.5" y="-247.5" />
+      <point x="289.78703703703707" y="1008.0" />
+      <point x="379.44444444444457" y="1008.0" />
+      <point x="379.44444444444457" y="988.0" />
+      <point x="207.16666666666669" y="988.0" />
+      <point x="78.66666666666669" y="38.5" />
+    </edge>
+    <edge source="Game.Connect4Game" target="Game.SimpleGameBoard" relationship="TO_MANY">
+      <point x="88.5" y="-247.5" />
+      <point x="348.787037037037" y="998.0" />
+      <point x="864.3657407407409" y="998.0" />
+      <point x="864.3657407407409" y="978.0" />
+      <point x="442.75000000000006" y="978.0" />
+      <point x="58.75" y="347.5" />
+    </edge>
+    <edge source="Game.Connect4Game" target="Game.GameBoard" relationship="TO_ONE">
+      <point x="88.5" y="-247.5" />
+      <point x="348.787037037037" y="998.0" />
+      <point x="864.3657407407409" y="998.0" />
+      <point x="864.3657407407409" y="978.0" />
+      <point x="963.5" y="978.0" />
+      <point x="69.0" y="402.5" />
+    </edge>
+    <edge source="Game.Connect4Game" target="Game.SimpleGameBoard" relationship="CREATE">
+      <point x="29.5" y="-247.5" />
+      <point x="289.78703703703707" y="1008.0" />
+      <point x="379.44444444444457" y="1008.0" />
+      <point x="379.44444444444457" y="988.0" />
+      <point x="325.25" y="988.0" />
+      <point x="-58.75" y="347.5" />
+    </edge>
+    <edge source="Game.Connect4Game.ButtonEventHandler" target="Game.Connect4Game" relationship="DEPENDENCY">
+      <point x="-78.66666666666669" y="38.5" />
+      <point x="49.833333333333314" y="998.0" />
+      <point x="59.69444444444457" y="998.0" />
+      <point x="59.69444444444457" y="1008.0" />
+      <point x="171.78703703703707" y="1008.0" />
+      <point x="-88.5" y="-247.5" />
+    </edge>
+    <edge source="Game.GameBoard" target="Game.GameTile" relationship="CREATE">
+      <point x="69.0" y="-402.5" />
+      <point x="963.5" y="131.0" />
+      <point x="913.6666666666667" y="131.0" />
+      <point x="38.33333333333337" y="50.0" />
+    </edge>
+    <edge source="Game.Connect4Game.ButtonEventHandler" target="Game.Connect4Game" relationship="INNER_CLASS">
+      <point x="0.0" y="38.5" />
+      <point x="128.5" y="998.0" />
+      <point x="230.78703703703707" y="998.0" />
+      <point x="-29.5" y="-247.5" />
+    </edge>
+    <edge source="Game.Connect4Game" target="Game.GameTimer" relationship="TO_ONE">
+      <point x="88.5" y="-247.5" />
+      <point x="348.787037037037" y="998.0" />
+      <point x="864.3657407407409" y="998.0" />
+      <point x="864.3657407407409" y="978.0" />
+      <point x="682.75" y="978.0" />
+      <point x="53.75" y="105.5" />
+    </edge>
+    <edge source="Game.GameBoard" target="Game.GameTile" relationship="TO_ONE">
+      <point x="-69.0" y="-402.5" />
+      <point x="825.5" y="131.0" />
+      <point x="875.3333333333334" y="131.0" />
+      <point x="0.0" y="50.0" />
+    </edge>
+    <edge source="Game.Connect4Game" target="Game.GameTile" relationship="DEPENDENCY">
+      <point x="-88.5" y="-247.5" />
+      <point x="171.78703703703707" y="1008.0" />
+      <point x="59.69444444444457" y="1008.0" />
+      <point x="59.69444444444457" y="998.0" />
+      <point x="0.0" y="998.0" />
+      <point x="0.0" y="121.0" />
+      <point x="837.0" y="121.0" />
+      <point x="-38.33333333333337" y="50.0" />
+    </edge>
+    <edge source="Game.Connect4Game" target="Game.GameTimer" relationship="CREATE">
+      <point x="29.5" y="-247.5" />
+      <point x="289.78703703703707" y="1008.0" />
+      <point x="379.44444444444457" y="1008.0" />
+      <point x="379.44444444444457" y="988.0" />
+      <point x="575.25" y="988.0" />
+      <point x="-53.75" y="105.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.8063471502590673" showDependencies="true" x="516.5000000000002" y="762.0000000000001" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
