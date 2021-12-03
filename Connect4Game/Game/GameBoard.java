@@ -119,11 +119,12 @@ public class GameBoard {
 
         switch (getAiDifficulty()){
             case 0: //v.easy
+                //ai places move randomly within the board's bounds.
                 addTile((int)(Math.random() * getGameBoard().length));
                 break;
             case 1: //easy
 
-                //ai places move within 1 column of last move (first move is initialized as the center of the board)
+                //ai places move within 1 column of last move (first move is at the center of the board)
                 currentAIMove = (int) (getLastAIMove() + Math.floor(Math.random()*3) - 1);
 
                 //limit AI moves to board boundaries
@@ -377,8 +378,9 @@ public class GameBoard {
         }
 
         /*
-         * the loops below scan through each tile in the grid and check the 3 tiles following to see if they match states.
-         * it skips the checking last 3 columns/rows (depending on the check) as
+         * the loops below scan through each tile (besides in the last 3 rows/columns, depending on which check it is)
+         * in the grid and check the 3 tiles following to see if they match states. If they match states, the winner
+         * is set to the current player, and the current player is returned.
          */
         //vertical check
         for(int i = 0; i < getGameBoard().length; i++){

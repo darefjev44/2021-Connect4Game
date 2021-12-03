@@ -16,7 +16,6 @@ import java.util.GregorianCalendar;
 
 /**
  * The driver class for my Connect Four game.
- * TODO write more here
  * @author Daniel Arefjev
  */
 public class Connect4Game extends JFrame implements MouseListener, ActionListener {
@@ -275,11 +274,11 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         c.gridy = 0;
         panel.add(bSize, c);
         bSize.addChangeListener(e -> {
-            /** ensures the board size input doesn't exceed mins/maxes and removes the need for validation elsewhere.
+            /* ensures the board size input doesn't exceed mins/maxes and removes the need for validation elsewhere.
              * for some reason getMaximum must be cast to a Number before it can be cast to an int, discovered this solution
              * after seeing a code snippet here: https://www.programcreek.com/java-api-examples/?api=javax.swing.SpinnerNumberModel
              * (example 19)
-             * */
+             */
             int value, max, min;
             Number maxAsNum, minAsNum;
             if(e.getSource() == bSize){
@@ -438,7 +437,7 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
 
         try{
             if(selectedFile != null){
-                SimpleGameBoard simpleGameBoard = new SimpleGameBoard();
+                SimpleGameBoard simpleGameBoard;
 
                 FileInputStream inputStream = new FileInputStream(selectedFile);
                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
@@ -464,7 +463,7 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
 
                 gameBoard = new GameBoard(boardSize);
                 gameBoard.setPlayerIcons(imageIcons[simpleGameBoard.getPlayer1Icon()], imageIcons[simpleGameBoard.getPlayer2Icon()]);
-                gameBoard.setAIStuff(aiToggle.isSelected(), aiDifficulty.getSelectedIndex());
+                gameBoard.setAIStuff(simpleGameBoard.getAIToggle(), simpleGameBoard.getAiDifficulty());
                 gameBoard.setPlayerNames(simpleGameBoard.getPlayer1Name(), simpleGameBoard.getPlayer2Name());
                 gameBoard.setLastAIMove(simpleGameBoard.getLastAIMove());
                 gameBoard.setAIStuff(simpleGameBoard.getAIToggle(), simpleGameBoard.getAiDifficulty());
@@ -481,8 +480,12 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
                 }
 
                 gameBoard.loadIcons();
-                settingsMenu.setVisible(false);
 
+                /*
+                Unnecessary, not sure why I put this in.
+                If I wanted to keep it though, it just needs to be wrapped in an if(settingsMenu!=null) statement.
+                 */
+                // settingsMenu.setVisible(false);
 
                 updatePlayerLabel();
                 currentPlayerName.setVisible(true);
@@ -573,7 +576,7 @@ public class Connect4Game extends JFrame implements MouseListener, ActionListene
         simpleGameBoard.setPlayer(gameBoard.getPlayer());
         simpleGameBoard.setTimeStarted(gameBoard.getTimeStarted());
         simpleGameBoard.setTimeElapsed(gameBoard.getTimeElapsed());
-        System.out.println("SimpleGameboard: " + simpleGameBoard.getTimeElapsed().get(Calendar.SECOND));
+        //System.out.println("SimpleGameboard: " + simpleGameBoard.getTimeElapsed().get(Calendar.SECOND));
 
         gameHistory.add(simpleGameBoard);
 
