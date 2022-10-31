@@ -1,5 +1,11 @@
 # Connect4Game
 
-A simple Connect 4 application where you can save/load game states, play vs (dumb) AI, customize player colours and change the size of the board.
+A simple "Connect 4" game done as part of my 2nd Year Object Oriented Programming project.
 
-Finished games will be stored in game_history.c4g, which can be viewed from the "View History" menu.
+Features include:
+- Custom Board Sizes
+- Custom Player Colours
+- Game Timer
+- Game States (saving/loading to specified location)
+- Optional rudimentary enemy AI player
+- Game History
